@@ -54,4 +54,4 @@ if __name__ == '__main__':
     # Instantiate MongoStreamListener and pass it as argument to the Stream
     sapi = tweepy.streaming.Stream(auth, MongoStreamListener(api, db))
     # Filter tweets according to a specified list of words to track
-    sapi.filter(track=['bayern'])
+    sapi.filter(track=['afc', 'arsenal', 'bvb', 'afcbvb', 'borussia'])
