@@ -1,2 +1,3 @@
 *.pyc
 twitter_access.pkl
+.ipynb_checkpoints
