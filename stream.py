@@ -4,8 +4,7 @@ import sys
 from pymongo import MongoClient
 import tweepy
 
-# Get access keys from pickle file in local memory
-# Insert proper consumer and keys and access tokens
+# Get Twitter access keys from pickle file in current directory
 access_keys = load(file('twitter_access.pkl'))
 
 consumer_key = access_keys['api_key']
@@ -15,10 +14,8 @@ access_token_secret = access_keys['access_secret']
 
 
 class MongoStreamListener(tweepy.StreamListener):
-    """ A listener handles tweets are the received from the stream.
-
-        This listener that takes the received tweets and stores them in a
-        NoSQL MongoDB database.
+    """ A listener that continuously receives tweets and stores them in a
+        MongoDB database.
 
     """
     def __init__(self, api, db):
@@ -51,7 +48,9 @@ if __name__ == '__main__':
     api = tweepy.API(auth)
     # Connect to MongoDB database
     db = MongoClient().cl
-    # Instantiate MongoStreamListener and pass it as argument to the Stream
+    # Instantiate MongoStreamListener and pass it as argument to the stream
     sapi = tweepy.streaming.Stream(auth, MongoStreamListener(api, db))
-    # Filter tweets according to a specified list of words to track
-    sapi.filter(track=['afc', 'arsenal', 'bvb', 'afcbvb', 'borussia'])
+    # Get tweets that match one of the following terms
+    sapi.filter(track=['championsleaguefinal', 'cl', 'barcelonavsjuventus',
+                       'barca', 'juve', 'barcajuve', 'uclfinal', 'juvefcb',
+                       'juvebarca'])
