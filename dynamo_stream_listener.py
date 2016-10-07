@@ -12,7 +12,9 @@ access_token = get_config('ACCESS_TOKEN')
 access_token_secret = get_config('ACCESS_SECRET')
 
 # setup dynamodb table
-session = boto3.Session(region_name='eu-central-1')
+session = boto3.Session(region_name='eu-central-1',
+                        aws_access_key_id='',
+                        aws_secret_access_key='')
 ddb = session.resource('dynamodb')
 table = ddb.Table('iot-tweets')
 
@@ -35,9 +37,11 @@ class DynamoStreamListener(tweepy.StreamListener):
         content['timestamp'] = data['timestamp_ms']
         content['lang'] = data['lang']
         content['n_retweets'] = data['retweet_count']
-        content['hastags'] = [x['text'] for x in data['entities']['hashtags']]
-        content['user_mentions'] = [x['name'] for x in data['entities']['user_mentions']]
-        content['urls'] = [x['url'] for x in data['entities']['urls']]
+        content['hastags'] = [
+            x['text'] for x in data['entities']['hashtags'] if x['text']]
+        content['user_mentions'] = [
+            x['name'] for x in data['entities']['user_mentions'] if x['name']]
+        content['urls'] = [x['url'] for x in data['entities']['urls'] if x['url']]
         content['text'] = data['text']
         content['user_id'] = data['user']['id']
         content['user_name'] = data['user']['name']
@@ -45,7 +49,10 @@ class DynamoStreamListener(tweepy.StreamListener):
 
         print(content['text'] + '\n')
 
-        self.table.put_item(Item=content)
+        try:
+            self.table.put_item(Item=content)
+        except:
+            print('Putting item failed...')
 
     def on_error(self, status_code):
         print('Encountered error with status code: {}'.format(status_code))
