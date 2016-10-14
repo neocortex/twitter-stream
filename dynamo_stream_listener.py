@@ -6,15 +6,15 @@ from config import get_config
 TRACK = ['#iot']
 
 # Get twitter access keys
-consumer_key = get_config('CONSUMER_KEY')
-consumer_secret = get_config('CONSUMER_SECRET')
-access_token = get_config('ACCESS_TOKEN')
-access_token_secret = get_config('ACCESS_SECRET')
+consumer_key = get_config('TWITTER_CONSUMER_KEY')
+consumer_secret = get_config('TWITTER_CONSUMER_SECRET')
+access_token = get_config('TWITTER_ACCESS_TOKEN')
+access_token_secret = get_config('TWITTER_ACCESS_SECRET')
 
 # setup dynamodb table
 session = boto3.Session(region_name='eu-central-1',
-                        aws_access_key_id='',
-                        aws_secret_access_key='')
+                        aws_access_key_id=get_config('AWS_ACCESS_KEY_ID'),
+                        aws_secret_access_key=get_config('AWS_SECRET_ACCESS_KEY'))
 ddb = session.resource('dynamodb')
 table = ddb.Table('iot-tweets')
 
@@ -34,7 +34,7 @@ class DynamoStreamListener(tweepy.StreamListener):
 
         content = {}
         content['tweet_id'] = data['id']
-        content['timestamp'] = data['timestamp_ms']
+        content['timestamp'] = int(data['timestamp_ms'])
         content['lang'] = data['lang']
         content['n_retweets'] = data['retweet_count']
         content['hastags'] = [
@@ -51,8 +51,8 @@ class DynamoStreamListener(tweepy.StreamListener):
 
         try:
             self.table.put_item(Item=content)
-        except:
-            print('Putting item failed...')
+        except Exception as e:
+            print(str(e))
 
     def on_error(self, status_code):
         print('Encountered error with status code: {}'.format(status_code))
