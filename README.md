@@ -1,17 +1,19 @@
 twitter-stream
 ==============
 
-A Twitter stream listener based on [tweepy](http://www.tweepy.org/) that stores received tweets in a mongoDB database.
+A Twitter stream listener based on [tweepy](http://www.tweepy.org/) that stores received tweets in a DynamoDB/mongoDB database.
 
 
 ### Depedencies
 
-- [mongoDB](https://www.mongodb.org/)
+- [boto3](https://boto3.readthedocs.io/en/latest/)
 - [pymongo](https://pypi.python.org/pypi/pymongo/)
 - [tweepy](http://www.tweepy.org/)
 
 ### Usage
 
-Specify the terms to be tracked at the bottom of ``stream.py`` and run:
+Specify the desired list of terms in `dynamo_stream_listener.py`.
 
-``python stream.py``
+Use the attached `Dockerfile` or run the Python executable directly:
+
+    python dynamo_stream_listener.py
